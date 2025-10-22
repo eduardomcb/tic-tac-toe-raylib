@@ -32,7 +32,6 @@ add_executable(tic_tac_toe_raylib
     src/main.c
     include/constants.h
     include/types.h
-    include/button.h
     include/game.h
 )
 
