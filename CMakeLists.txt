@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.30)
-project(tic_tac_toe C)
+project(tic_tac_toe_raylib C)
 
 set(CMAKE_C_STANDARD 23)
 
@@ -26,9 +26,13 @@ else()
     message(STATUS "Using local ${LIB1}")
 endif()
 
-add_executable(tic_tac_toe
+file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+
+add_executable(tic_tac_toe_raylib
     src/main.c
+    include/constants.h
 )
 
-target_include_directories(tic_tac_toe PRIVATE ${raylib_INCLUDE_DIRS})
-target_link_libraries(tic_tac_toe PRIVATE ${LIB1})
+target_include_directories(tic_tac_toe_raylib PRIVATE ${raylib_INCLUDE_DIRS})
+target_include_directories(tic_tac_toe_raylib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(tic_tac_toe_raylib PRIVATE ${LIB1})
