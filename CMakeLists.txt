@@ -31,6 +31,9 @@ file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
 add_executable(tic_tac_toe_raylib
     src/main.c
     include/constants.h
+    include/types.h
+    include/button.h
+    include/game.h
 )
 
 target_include_directories(tic_tac_toe_raylib PRIVATE ${raylib_INCLUDE_DIRS})
