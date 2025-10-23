@@ -16,12 +16,29 @@ typedef enum {
   BTN_STATE_PRESSED
 } ButtonState;
 
+typedef struct {
+  Rectangle bounds;
+  Texture2D texture;
+  const char *text;
+  ButtonState state;
+  bool action;
+
+  Color colorNormal;
+  Color colorHover;
+  Color colorPressed;
+  Color colorText;
+} Button;
 
 typedef struct {
   GameScreen currentScreen;
   Font font;
   Texture2D texButton;
   Texture2D texBackground;
+
+  Button btnPlay;
+  Button btnScoreboard;
+  Button btnExit;
+
 } GameState;
 
 #endif
