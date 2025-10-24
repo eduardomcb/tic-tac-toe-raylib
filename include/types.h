@@ -7,7 +7,6 @@ typedef enum {
   SCREEN_MENU,
   SCREEN_PLAYING,
   SCREEN_SCOREBOARD,
-  SCREEN_OVER,
   SCREEN_EXIT
 } GameScreen;
 
@@ -35,10 +34,18 @@ typedef struct {
   Font font;
   Texture2D texButton;
   Texture2D texBackground;
+  Texture2D texCell;
+  Texture2D texPlayerX;
+  Texture2D texPlayerO;
 
   Button btnPlay;
   Button btnScoreboard;
   Button btnExit;
+
+  char board[3][3];
+  Rectangle boardRects[3][3];
+  int currentPlayer;
+  int winner;
 
 } GameState;
 
