@@ -3,15 +3,22 @@
 #include "game.h"
 #include "raylib.h"
 #include "types.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 static void UpdateMenu(GameState *game);
 static void DrawMenu(const GameState *game);
 static void UpdatePlaying(GameState *game);
 static void DrawPlaying(const GameState *game);
+static void UpdateScoreboard(GameState *game);
+static void DrawScoreboard(const GameState *game);
 
 static void ResetGame(GameState *game);
 static void MakePlayerMove(GameState *game, int row, int col);
 static void MakeAIMove(GameState *game);
+
+static void saveScore(const char *winner);
+static char *readScore();
 
 void InitGame(GameState *game) {
   game->font = LoadFont("assets/fonts/kenney-future-narrow.ttf");
@@ -98,6 +105,7 @@ void DrawGame(const GameState *game) {
     DrawPlaying(game);
     break;
   case SCREEN_SCOREBOARD:
+    DrawScoreboard(game);
     break;
   case SCREEN_EXIT:
     break;
@@ -125,6 +133,10 @@ static void UpdateMenu(GameState *game) {
   }
   if (game->btnScoreboard.action) {
     game->currentScreen = SCREEN_SCOREBOARD;
+    if (game->scoreboardText != NULL) {
+      free(game->scoreboardText);
+    }
+    game->scoreboardText = readScore();
   }
   if (game->btnExit.action) {
     game->currentScreen = SCREEN_EXIT;
@@ -143,6 +155,36 @@ static void DrawMenu(const GameState *game) {
   DrawButton(&game->btnPlay, game->font, BUTTON_TEXT_FONT_SIZE, 1.0f);
   DrawButton(&game->btnScoreboard, game->font, BUTTON_TEXT_FONT_SIZE, 1.0f);
   DrawButton(&game->btnExit, game->font, BUTTON_TEXT_FONT_SIZE, 1.0f);
+}
+
+static void UpdateScoreboard(GameState *game) {
+  if (IsKeyPressed(KEY_M)) {
+    game->currentScreen = SCREEN_MENU;
+
+    if (game->scoreboardText != NULL) {
+      free(game->scoreboardText);
+      game->scoreboardText = NULL;
+    }
+  }
+}
+
+static void DrawScoreboard(const GameState *game) {
+  const char *title = "Placar de Vitórias";
+  Vector2 titleSize = MeasureTextEx(game->font, title, 40, TEXT_SPACING);
+  DrawTextEx(game->font, title,
+             (Vector2){(SCREEN_WIDTH / 2.0f) - (titleSize.x / 2.0f), 20}, 40,
+             TEXT_SPACING, BLACK);
+
+  if (game->scoreboardText != NULL) {
+    DrawTextEx(game->font, game->scoreboardText, (Vector2){50, 80}, 20,
+               TEXT_SPACING, DARKGRAY);
+  } else {
+    DrawTextEx(game->font, "Nenhum placar salvo ainda.", (Vector2){50, 80}, 20,
+               TEXT_SPACING, DARKGRAY);
+  }
+
+  DrawTextEx(game->font, "Pressione 'M' para voltar ao Menu",
+             (Vector2){10, SCREEN_HEIGHT - 30}, 20, TEXT_SPACING, GRAY);
 }
 
 static void UpdatePlaying(GameState *game) {
@@ -255,6 +297,11 @@ static void CheckForWin(GameState *game, int playerWhoMoved) {
       game->winner = playerWhoMoved;
       return;
     }
+    if (playerWhoMoved == PLAYER_TURN) {
+      saveScore("Humano");
+    } else {
+      saveScore("Máquina");
+    }
   }
 
   if ((game->board[0][0] == marker && game->board[1][1] == marker &&
@@ -262,7 +309,13 @@ static void CheckForWin(GameState *game, int playerWhoMoved) {
       (game->board[0][2] == marker && game->board[1][1] == marker &&
        game->board[2][0] == marker)) {
     game->winner = playerWhoMoved;
+
     return;
+    if (playerWhoMoved == PLAYER_TURN) {
+      saveScore("Humano");
+    } else {
+      saveScore("Máquina");
+    }
   }
 
   bool draw = true;
@@ -320,4 +373,43 @@ static void MakeAIMove(GameState *game) {
       game->currentPlayer = PLAYER_TURN;
     }
   }
+}
+
+static void saveScore(const char *winner) {
+  FILE *file = fopen(SCOREBOARD_FILE, "a");
+
+  if (file == NULL) {
+    perror("Erro ao abrir o arquivo para escrita");
+    return;
+  }
+
+  fprintf(file, "%s - Venceu\n", winner);
+
+  fclose(file);
+
+  printf("Resultado salvo: %s venceu.\n", winner);
+}
+
+static char *readScore() {
+  FILE *arquivo = fopen(SCOREBOARD_FILE, "r");
+  if (arquivo == NULL) {
+    return NULL;
+  }
+
+  fseek(arquivo, 0, SEEK_END);
+  long tamanho = ftell(arquivo);
+  rewind(arquivo);
+
+  char *buffer = (char *)malloc(tamanho + 1);
+  if (buffer == NULL) {
+    perror("Erro ao alocar memória para ler o placar");
+    fclose(arquivo);
+    return NULL;
+  }
+
+  size_t bytesLidos = fread(buffer, 1, tamanho, arquivo);
+  buffer[bytesLidos] = '\0';
+
+  fclose(arquivo);
+  return buffer;
 }

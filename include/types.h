@@ -47,6 +47,8 @@ typedef struct {
   int currentPlayer;
   int winner;
 
+  char *scoreboardText;
+
 } GameState;
 
 #endif

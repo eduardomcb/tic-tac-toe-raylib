@@ -18,4 +18,6 @@
 #define PLAYER_TURN 1
 #define AI_TURN 2
 
+#define SCOREBOARD_FILE "scoreboard.txt"
+
 #endif
