@@ -86,6 +86,9 @@ static void UpdateMenu(GameState *game) {
   if (game->btnScoreboard.action) {
     game->currentScreen = SCREEN_SCOREBOARD;
   }
+  if (game->btnExit.action) {
+    game->currentScreen = SCREEN_EXIT;
+  }
 }
 
 static void DrawMenu(const GameState *game) {

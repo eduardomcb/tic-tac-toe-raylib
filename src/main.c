@@ -9,7 +9,7 @@ int main(void) {
   GameState game = {0};
   InitGame(&game);
 
-  while (!WindowShouldClose()) {
+  while (!WindowShouldClose() && game.currentScreen != SCREEN_EXIT) {
 
     UpdateGame(&game);
 

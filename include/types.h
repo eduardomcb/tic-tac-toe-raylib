@@ -7,7 +7,8 @@ typedef enum {
   SCREEN_MENU,
   SCREEN_PLAYING,
   SCREEN_SCOREBOARD,
-  SCREEN_OVER
+  SCREEN_OVER,
+  SCREEN_EXIT
 } GameScreen;
 
 typedef enum {
